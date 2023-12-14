@@ -3,6 +3,7 @@ package category
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/spacetronot-research-team/catalog-service/internal/entity"
 	"github.com/stretchr/testify/assert"
@@ -75,6 +76,37 @@ func Test_categoryService_CreateCategory(t *testing.T) {
 
 				f.persistenceRepo.EXPECT().InsertCategory(gomock.Any(), entity.Category{Name: "Laptop"}).
 					Return(int64(1), nil)
+
+				f.cacheRepo.EXPECT().InsertCategory(gomock.Any(), entity.Category{
+					ID:   int64(1),
+					Name: "Laptop",
+				}, 2*time.Hour).Return(nil)
+			},
+			want: CreateCategoryResponse{
+				ID:   1,
+				Name: "Laptop",
+			},
+			wantErr: nil,
+		},
+		{
+			name: "Success to creates a new category with failed to save into cache",
+			args: args{
+				ctx: context.Background(),
+				req: CreateCategoryRequest{
+					Name: "Laptop",
+				},
+			},
+			mock: func(f fields) {
+				f.persistenceRepo.EXPECT().FindCategoryByName(gomock.Any(), "Laptop").
+					Return(entity.Category{}, entity.ErrCategoryNotFound)
+
+				f.persistenceRepo.EXPECT().InsertCategory(gomock.Any(), entity.Category{Name: "Laptop"}).
+					Return(int64(1), nil)
+
+				f.cacheRepo.EXPECT().InsertCategory(gomock.Any(), entity.Category{
+					ID:   int64(1),
+					Name: "Laptop",
+				}, 2*time.Hour).Return(assert.AnError)
 			},
 			want: CreateCategoryResponse{
 				ID:   1,

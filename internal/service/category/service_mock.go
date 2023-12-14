@@ -11,6 +11,7 @@ package category
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	entity "github.com/spacetronot-research-team/catalog-service/internal/entity"
 	gomock "go.uber.org/mock/gomock"
@@ -135,34 +136,18 @@ func (m *MockcacheRepository) EXPECT() *MockcacheRepositoryMockRecorder {
 	return m.recorder
 }
 
-// FindCategoryByID mocks base method.
-func (m *MockcacheRepository) FindCategoryByID(ctx context.Context, id int64) (entity.Category, error) {
+// InsertCategory mocks base method.
+func (m *MockcacheRepository) InsertCategory(ctx context.Context, category entity.Category, ttl time.Duration) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindCategoryByID", ctx, id)
-	ret0, _ := ret[0].(entity.Category)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "InsertCategory", ctx, category, ttl)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// FindCategoryByID indicates an expected call of FindCategoryByID.
-func (mr *MockcacheRepositoryMockRecorder) FindCategoryByID(ctx, id any) *gomock.Call {
+// InsertCategory indicates an expected call of InsertCategory.
+func (mr *MockcacheRepositoryMockRecorder) InsertCategory(ctx, category, ttl any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCategoryByID", reflect.TypeOf((*MockcacheRepository)(nil).FindCategoryByID), ctx, id)
-}
-
-// FindCategoryByName mocks base method.
-func (m *MockcacheRepository) FindCategoryByName(ctx context.Context, name string) (entity.Category, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindCategoryByName", ctx, name)
-	ret0, _ := ret[0].(entity.Category)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindCategoryByName indicates an expected call of FindCategoryByName.
-func (mr *MockcacheRepositoryMockRecorder) FindCategoryByName(ctx, name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCategoryByName", reflect.TypeOf((*MockcacheRepository)(nil).FindCategoryByName), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCategory", reflect.TypeOf((*MockcacheRepository)(nil).InsertCategory), ctx, category, ttl)
 }
 
 // MockService is a mock of Service interface.

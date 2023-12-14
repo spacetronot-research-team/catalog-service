@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spacetronot-research-team/catalog-service/internal/entity"
@@ -18,8 +19,7 @@ type persistenceRepository interface {
 }
 
 type cacheRepository interface {
-	FindCategoryByID(ctx context.Context, id int64) (entity.Category, error)
-	FindCategoryByName(ctx context.Context, name string) (entity.Category, error)
+	InsertCategory(ctx context.Context, category entity.Category, ttl time.Duration) error
 }
 
 type Service interface {
@@ -63,8 +63,21 @@ func (svc *categoryService) CreateCategory(ctx context.Context, req CreateCatego
 		return CreateCategoryResponse{}, err
 	}
 
-	return CreateCategoryResponse{
+	response := CreateCategoryResponse{
 		ID:   categoryID,
 		Name: req.Name,
-	}, nil
+	}
+
+	err = svc.cacheRepo.InsertCategory(ctx, entity.Category{
+		ID:   response.ID,
+		Name: response.Name,
+	}, 2*time.Hour)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"id":   response.ID,
+			"name": response.Name,
+		}).Errorf("svc.cacheRepo.InsertCategory() got error: %s", err.Error())
+	}
+
+	return response, nil
 }

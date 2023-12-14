@@ -48,7 +48,7 @@ func (svc *categoryService) CreateCategory(ctx context.Context, req CreateCatego
 		return CreateCategoryResponse{}, err
 	}
 
-	if err != entity.ErrCategoryNotFound {
+	if err == nil {
 		return CreateCategoryResponse{}, ErrCategoryAlreadyExists
 	}
 

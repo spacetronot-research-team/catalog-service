@@ -1,14 +1,13 @@
 package service
 
 import (
-	"github.com/spacetronot-research-team/catalog-service/internal/dto"
 	"github.com/spacetronot-research-team/catalog-service/internal/repository"
 )
 
 type Product interface {
 	Create()
-	GetLists()
-	GetDetails() dto.CreateCategoryResponse
+	GetList()
+	GetDetails()
 	Update()
 	Delete()
 }
@@ -18,25 +17,32 @@ type productService struct {
 }
 
 func NewProductService(productRepository repository.Product) Product {
-	return &productService{productRepository: productRepository}
+	return &productService{
+		productRepository: productRepository,
+	}
 }
 
+// Create implements Product.
 func (*productService) Create() {
 	panic("unimplemented")
 }
 
+// Delete implements Product.
 func (*productService) Delete() {
 	panic("unimplemented")
 }
 
-func (*productService) GetDetails() dto.CreateCategoryResponse {
+// GetDetails implements Product.
+func (*productService) GetDetails() {
 	panic("unimplemented")
 }
 
-func (*productService) GetLists() {
+// GetList implements Product.
+func (*productService) GetList() {
 	panic("unimplemented")
 }
 
+// Update implements Product.
 func (*productService) Update() {
 	panic("unimplemented")
 }

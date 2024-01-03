@@ -1,18 +1,21 @@
 package dto
 
-import "github.com/spacetronot-research-team/catalog-service/internal/model"
-
 type CreateProductRequest struct {
-	Amount int
+	Name       string
+	CategoryID int64
+	Stock      int64
+	Price      float64
 }
 
-type CreateProductResponse struct {
-	Success bool
+type GetProductListRequest struct {
+	Limit  int64
+	Offset int64
 }
 
-func (p model.Product) ToResponse() CreateProductResponse {
-	return CreateProductResponse{
-		ID:   p.ID,
-		Name: p.Name,
-	}
+type Product struct {
+	ID       int64
+	Name     string
+	Category Category
+	Stock    int64
+	Price    float64
 }

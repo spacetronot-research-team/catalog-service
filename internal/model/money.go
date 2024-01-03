@@ -1,6 +1,6 @@
 package model
 
 type Price struct {
-	Amount   float32
+	Value    float64
 	Currency string
 }

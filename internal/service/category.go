@@ -15,25 +15,32 @@ type categoryService struct {
 }
 
 func NewCategoryService(categoryRepository repository.Category) Category {
-	return &categoryService{categoryRepository: categoryRepository}
+	return &categoryService{
+		categoryRepository: categoryRepository,
+	}
 }
 
+// Create implements Category.
 func (*categoryService) Create() {
 	panic("unimplemented")
 }
 
+// Delete implements Category.
 func (*categoryService) Delete() {
 	panic("unimplemented")
 }
 
+// GetDetails implements Category.
 func (*categoryService) GetDetails() {
 	panic("unimplemented")
 }
 
+// GetList implements Category.
 func (*categoryService) GetList() {
 	panic("unimplemented")
 }
 
+// Update implements Category.
 func (*categoryService) Update() {
 	panic("unimplemented")
 }

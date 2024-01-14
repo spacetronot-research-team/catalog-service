@@ -22,7 +22,6 @@ func InitializeDB() (*gorm.DB, error) {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		dbHost, dbUser, dbPass, dbName, dbPort, sslMode, tz,
 	)
-	logrus.Info("DSN:", dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {

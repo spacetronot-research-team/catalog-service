@@ -1,10 +1,10 @@
 package dto
 
 type CreateProductRequest struct {
-	Name       string  `json:"name"`
-	CategoryID int64   `json:"category_id"`
-	Stock      int64   `json:"stock"`
-	Price      float64 `json:"price"`
+	Name       string  `json:"name" binding:"required"`
+	CategoryID int64   `json:"category_id" binding:"required"`
+	Stock      int64   `json:"stock" binding:"required"`
+	Price      float64 `json:"price" binding:"required"`
 }
 
 type GetProductListRequest struct {

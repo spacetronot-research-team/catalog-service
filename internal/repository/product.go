@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=product.go -destination=mock/product.go -package=repository
+
 type Product interface {
 	// Create inserts product to db, return productID and error
 	Create(ctx context.Context, product model.Product) (productID int64, err error)

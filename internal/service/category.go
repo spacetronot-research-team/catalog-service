@@ -1,9 +1,17 @@
 package service
 
-import "github.com/spacetronot-research-team/catalog-service/internal/repository"
+import (
+	"context"
+	"fmt"
+
+	"github.com/spacetronot-research-team/catalog-service/internal/dto"
+	"github.com/spacetronot-research-team/catalog-service/internal/model"
+	"github.com/spacetronot-research-team/catalog-service/internal/repository"
+)
 
 type Category interface {
-	Create()
+	// Create inserts category to db, return categoryID and error
+	Create(ctx context.Context, dtoCategory dto.CreateCategoryRequest) (categoryID int64, err error)
 	GetList()
 	GetDetails()
 	Update()
@@ -20,9 +28,13 @@ func NewCategoryService(categoryRepository repository.Category) Category {
 	}
 }
 
-// Create implements Category.
-func (*categoryService) Create() {
-	panic("unimplemented")
+// Create inserts category to db, return categoryID and error
+func (cs *categoryService) Create(ctx context.Context, dtoCategory dto.CreateCategoryRequest) (int64, error) {
+	categoryID, err := cs.categoryRepository.Create(ctx, model.Category{Name: dtoCategory.Name})
+	if err != nil {
+		return 0, fmt.Errorf("fail insert category to db: %v", err)
+	}
+	return categoryID, nil
 }
 
 // Delete implements Category.

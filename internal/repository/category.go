@@ -1,7 +1,17 @@
 package repository
 
+import (
+	"context"
+
+	"github.com/spacetronot-research-team/catalog-service/internal/model"
+	"gorm.io/gorm"
+)
+
+//go:generate mockgen -source=category.go -destination=mock/category.go -package=repository
+
 type Category interface {
-	Create()
+	// Create inserts category to db, return categoryID and error
+	Create(ctx context.Context, category model.Category) (categoryID int64, err error)
 	GetList()
 	GetDetails()
 	Update()
@@ -9,14 +19,22 @@ type Category interface {
 }
 
 type categoryRepository struct {
+	db *gorm.DB
 }
 
-func NewCategoryRepository() Category {
-	return &categoryRepository{}
+func NewCategoryRepository(db *gorm.DB) Category {
+	return &categoryRepository{
+		db: db,
+	}
 }
 
-func (*categoryRepository) Create() {
-	panic("unimplemented")
+// Create inserts category to db, return categoryID and error
+func (cr *categoryRepository) Create(ctx context.Context, category model.Category) (int64, error) {
+	if err := cr.db.Create(&category).Error; err != nil {
+		return 0, err
+	}
+
+	return category.ID, nil
 }
 
 func (*categoryRepository) Delete() {

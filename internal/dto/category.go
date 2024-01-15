@@ -1,7 +1,7 @@
 package dto
 
 type CreateCategoryRequest struct {
-	Name string
+	Name string `json:"name" binding:"required"`
 }
 
 type GetCategoryListRequest struct {

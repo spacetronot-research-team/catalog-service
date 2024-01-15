@@ -16,7 +16,8 @@ type Product interface {
 	GetList()
 	GetDetails()
 	Update()
-	Delete()
+	// Delete will delete product from db by productID
+	Delete(ctx context.Context, productID int64) (err error)
 }
 
 type productService struct {
@@ -70,9 +71,23 @@ func (ps *productService) dtoCreateProductRequestToModelProduct(dtoProduct dto.C
 	}
 }
 
-// Delete implements Product.
-func (*productService) Delete() {
-	panic("unimplemented")
+// Delete will delete product from db by productID
+func (ps *productService) Delete(ctx context.Context, productID int64) (err error) {
+	if err := ps.validateDeleteProductID(productID); err != nil {
+		return fmt.Errorf("request invalid: %v", err)
+	}
+
+	if err := ps.productRepository.Delete(ctx, productID); err != nil {
+		return fmt.Errorf("fail delete product by id: %v", err)
+	}
+	return nil
+}
+
+func (ps *productService) validateDeleteProductID(productID int64) error {
+	if productID <= 0 {
+		return errors.New("product_id is not valid")
+	}
+	return nil
 }
 
 // GetDetails implements Product.

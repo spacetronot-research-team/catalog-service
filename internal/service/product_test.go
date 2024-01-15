@@ -140,3 +140,73 @@ func Test_productService_Create(t *testing.T) {
 		})
 	}
 }
+
+func Test_productService_Delete(t *testing.T) {
+	type fields struct {
+		productRepository *repository.MockProduct
+	}
+	type args struct {
+		ctx       context.Context
+		productID int64
+	}
+	tests := []struct {
+		name    string
+		mock    func(f fields)
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "success delete product by id",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().Delete(nil, int64(100)).Return(nil)
+			},
+			args: args{
+				ctx:       nil,
+				productID: 100,
+			},
+			wantErr: false,
+		},
+		{
+			name: "fail delete product by id",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().Delete(nil, int64(100)).Return(assert.AnError)
+			},
+			args: args{
+				ctx:       nil,
+				productID: 100,
+			},
+			wantErr: true,
+		},
+		{
+			name: "product_id is not valid",
+			mock: func(f fields) {},
+			args: args{
+				ctx:       nil,
+				productID: -100,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			f := fields{
+				productRepository: repository.NewMockProduct(ctrl),
+			}
+			tt.mock(f)
+
+			ps := &productService{
+				productRepository: f.productRepository,
+			}
+
+			err := ps.Delete(tt.args.ctx, tt.args.productID)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+			}
+		})
+	}
+}

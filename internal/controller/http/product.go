@@ -1,7 +1,9 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -40,6 +42,35 @@ func (pc *ProductController) Create(ctx *gin.Context) {
 	logrus.WithContext(ctx).WithFields(logrus.Fields{
 		"product_id": productID,
 	}).Info("success inserts product to db")
+
+	httpresponse.Write(ctx, http.StatusOK, productID, nil)
+}
+
+// Delete will delete product from db by productID
+func (pc *ProductController) Delete(ctx *gin.Context) {
+	paramID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		logrus.WithContext(ctx).WithFields(logrus.Fields{
+			"id": ctx.Param("id"),
+		}).Error(fmt.Errorf("fail convert param id string to int: %v", err))
+
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	productID := int64(paramID)
+	if err := pc.productService.Delete(ctx, productID); err != nil {
+		logrus.WithContext(ctx).WithFields(logrus.Fields{
+			"product_id": productID,
+		}).Error(err)
+
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).WithFields(logrus.Fields{
+		"product_id": productID,
+	}).Info("success delete product from db")
 
 	httpresponse.Write(ctx, http.StatusOK, productID, nil)
 }

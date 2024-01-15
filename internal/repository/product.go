@@ -15,7 +15,8 @@ type Product interface {
 	GetList()
 	GetDetails()
 	Update()
-	Delete()
+	// Delete will delete product from db by productID
+	Delete(ctx context.Context, productID int64) (err error)
 }
 
 type productRepository struct {
@@ -37,8 +38,16 @@ func (pr *productRepository) Create(ctx context.Context, product model.Product) 
 	return product.ID, nil
 }
 
-func (*productRepository) Delete() {
-	panic("unimplemented")
+// Delete will delete product from db by productID
+func (pr *productRepository) Delete(ctx context.Context, productID int64) (err error) {
+	query := pr.db.Debug().Where("id = ?", productID).Delete(&model.Product{})
+	if query.Error != nil {
+		return query.Error
+	}
+	if query.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (*productRepository) GetDetails() {

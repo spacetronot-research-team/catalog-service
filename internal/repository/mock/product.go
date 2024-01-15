@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/spacetronot-research-team/catalog-service/internal/model"
+	pagination "github.com/spacetronot-research-team/catalog-service/pkg/pagination"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -82,15 +83,18 @@ func (mr *MockProductMockRecorder) GetDetails() *gomock.Call {
 }
 
 // GetList mocks base method.
-func (m *MockProduct) GetList() {
+func (m *MockProduct) GetList(ctx context.Context, pagination pagination.Pagination) ([]model.Product, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetList")
+	ret := m.ctrl.Call(m, "GetList", ctx, pagination)
+	ret0, _ := ret[0].([]model.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetList indicates an expected call of GetList.
-func (mr *MockProductMockRecorder) GetList() *gomock.Call {
+func (mr *MockProductMockRecorder) GetList(ctx, pagination any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockProduct)(nil).GetList))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockProduct)(nil).GetList), ctx, pagination)
 }
 
 // Update mocks base method.

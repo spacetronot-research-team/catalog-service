@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/spacetronot-research-team/catalog-service/internal/model"
+	"github.com/spacetronot-research-team/catalog-service/pkg/pagination"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +13,8 @@ import (
 type Product interface {
 	// Create inserts product to db, return productID and error
 	Create(ctx context.Context, product model.Product) (productID int64, err error)
-	GetList()
+	// GetList return products filtered using pagination
+	GetList(ctx context.Context, pagination pagination.Pagination) (products []model.Product, err error)
 	GetDetails()
 	// Update will update product by id for every field that is not default value
 	Update(ctx context.Context, product model.Product) (productID int64, err error)
@@ -55,8 +57,14 @@ func (*productRepository) GetDetails() {
 	panic("unimplemented")
 }
 
-func (*productRepository) GetList() {
-	panic("unimplemented")
+// GetList return products filtered using pagination
+func (pr *productRepository) GetList(ctx context.Context, pagination pagination.Pagination) ([]model.Product, error) {
+	products := []model.Product{}
+	query := pr.db.Offset(pagination.Offset).Limit(pagination.Limit).Find(&products)
+	if query.Error != nil {
+		return nil, query.Error
+	}
+	return products, nil
 }
 
 // Update will update product by id for every field that is not default value

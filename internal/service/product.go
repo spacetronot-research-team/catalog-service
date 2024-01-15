@@ -9,12 +9,14 @@ import (
 	"github.com/spacetronot-research-team/catalog-service/internal/dto"
 	"github.com/spacetronot-research-team/catalog-service/internal/model"
 	"github.com/spacetronot-research-team/catalog-service/internal/repository"
+	"github.com/spacetronot-research-team/catalog-service/pkg/pagination"
 )
 
 type Product interface {
 	// Create inserts product to db, return productID and error
 	Create(ctx context.Context, dtoProduct dto.CreateProductRequest) (productID int64, err error)
-	GetList()
+	// GetList return products filtered using pagination
+	GetList(ctx context.Context, page int, limit int) (products []model.Product, err error)
 	GetDetails()
 	// Update will update product by id for every field that is not default value
 	Update(ctx context.Context, dtoProduct dto.UpdateProductRequest) (productID int64, err error)
@@ -97,9 +99,30 @@ func (*productService) GetDetails() {
 	panic("unimplemented")
 }
 
-// GetList implements Product.
-func (*productService) GetList() {
-	panic("unimplemented")
+// GetList return products filtered using pagination
+func (ps *productService) GetList(ctx context.Context, page int, limit int) ([]model.Product, error) {
+	if err := ps.validateGetListArgs(page, limit); err != nil {
+		return nil, fmt.Errorf("invalid request: %v", err)
+	}
+
+	pagination := pagination.New(page, limit)
+
+	products, err := ps.productRepository.GetList(ctx, pagination)
+	if err != nil {
+		return nil, fmt.Errorf("fail get product list: %v", err)
+	}
+
+	return products, nil
+}
+
+func (ps *productService) validateGetListArgs(page int, limit int) error {
+	if page < 1 {
+		return errors.New("page can not less than 1")
+	}
+	if limit < 1 {
+		return errors.New("limit can not less than 1")
+	}
+	return nil
 }
 
 // Update will update product by id for every field that is not default value

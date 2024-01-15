@@ -210,3 +210,156 @@ func Test_productService_Delete(t *testing.T) {
 		})
 	}
 }
+
+func Test_productService_Update(t *testing.T) {
+	type fields struct {
+		productRepository *repository.MockProduct
+	}
+	type args struct {
+		ctx        context.Context
+		dtoProduct dto.UpdateProductRequest
+	}
+	tests := []struct {
+		name    string
+		mock    func(f fields)
+		args    args
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "validate error, all body is default value",
+			mock: func(f fields) {},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         0,
+					Name:       "",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      0,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "validate error, category_id is not valid",
+			mock: func(f fields) {},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         0,
+					Name:       "",
+					CategoryID: -11,
+					Stock:      0,
+					Price:      0,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "validate error, stock is not valid",
+			mock: func(f fields) {},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         0,
+					Name:       "",
+					CategoryID: 0,
+					Stock:      -11,
+					Price:      0,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "validate error, price is not valid",
+			mock: func(f fields) {},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         0,
+					Name:       "",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      -11,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "update from repo error",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().Update(nil, model.Product{
+					ID:         11,
+					Name:       "new product name",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      0,
+				}).Return(int64(0), assert.AnError)
+			},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         11,
+					Name:       "new product name",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      0,
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "update product success",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().Update(nil, model.Product{
+					ID:         11,
+					Name:       "new product name",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      0,
+				}).Return(int64(89798), nil)
+			},
+			args: args{
+				ctx: nil,
+				dtoProduct: dto.UpdateProductRequest{
+					ID:         11,
+					Name:       "new product name",
+					CategoryID: 0,
+					Stock:      0,
+					Price:      0,
+				},
+			},
+			want:    89798,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			f := fields{
+				productRepository: repository.NewMockProduct(ctrl),
+			}
+			tt.mock(f)
+
+			ps := &productService{
+				productRepository: f.productRepository,
+			}
+
+			got, err := ps.Update(tt.args.ctx, tt.args.dtoProduct)
+			assert.Equal(t, got, tt.want)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+			}
+		})
+	}
+}

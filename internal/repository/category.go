@@ -15,7 +15,8 @@ type Category interface {
 	// GetList return categories
 	GetList(ctx context.Context) (categories []model.Category, err error)
 	GetDetails()
-	Update()
+	// Update will update category by id for every field that is not default value
+	Update(ctx context.Context, category model.Category) (categoryID int64, err error)
 	// Delete will delete category from db by categoryID
 	Delete(ctx context.Context, categoryID int64) (err error)
 }
@@ -64,6 +65,14 @@ func (cr *categoryRepository) GetList(ctx context.Context) ([]model.Category, er
 	return categories, nil
 }
 
-func (*categoryRepository) Update() {
-	panic("unimplemented")
+// Update will update category by id for every field that is not default value
+func (cr *categoryRepository) Update(ctx context.Context, category model.Category) (int64, error) {
+	query := cr.db.Updates(&category)
+	if query.Error != nil {
+		return 0, query.Error
+	}
+	if query.RowsAffected == 0 {
+		return 0, gorm.ErrRecordNotFound
+	}
+	return category.ID, nil
 }

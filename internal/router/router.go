@@ -19,5 +19,6 @@ func Add(ginEngine *gin.Engine, db *gorm.DB) {
 
 	ginEngine.POST("/api/categories", categoryController.Create)
 	ginEngine.DELETE("/api/categories/:id", categoryController.Delete)
+	ginEngine.PUT("/api/categories/:id", categoryController.Update)
 	ginEngine.GET("/api/categories", categoryController.GetList)
 }

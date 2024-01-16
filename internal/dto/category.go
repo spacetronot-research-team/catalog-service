@@ -10,7 +10,8 @@ type GetCategoryListRequest struct {
 }
 
 type UpdateCategoryRequest struct {
-	Name string
+	ID   int64  `json:"-"`
+	Name string `json:"name"`
 }
 
 type Category struct {

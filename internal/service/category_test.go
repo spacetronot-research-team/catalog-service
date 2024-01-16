@@ -218,3 +218,91 @@ func Test_categoryService_GetList(t *testing.T) {
 		})
 	}
 }
+
+func Test_categoryService_Update(t *testing.T) {
+	type fields struct {
+		categoryRepository *repository.MockCategory
+	}
+	type args struct {
+		ctx         context.Context
+		dtoCategory dto.UpdateCategoryRequest
+	}
+	tests := []struct {
+		name    string
+		mock    func(f fields)
+		args    args
+		want    int64
+		wantErr bool
+	}{
+		{
+			name: "request invalid, all body is default value",
+			mock: func(f fields) {},
+			args: args{
+				ctx: nil,
+				dtoCategory: dto.UpdateCategoryRequest{
+					ID:   0,
+					Name: "",
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "fail update from repo",
+			mock: func(f fields) {
+				f.categoryRepository.EXPECT().
+					Update(nil, gomock.Any()).
+					Return(int64(0), assert.AnError)
+			},
+			args: args{
+				ctx: nil,
+				dtoCategory: dto.UpdateCategoryRequest{
+					ID:   2,
+					Name: "categoryfoo",
+				},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "success update category",
+			mock: func(f fields) {
+				f.categoryRepository.EXPECT().
+					Update(nil, gomock.Any()).
+					Return(int64(23342), nil)
+			},
+			args: args{
+				ctx: nil,
+				dtoCategory: dto.UpdateCategoryRequest{
+					ID:   2,
+					Name: "categoryfoo",
+				},
+			},
+			want:    23342,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			f := fields{
+				categoryRepository: repository.NewMockCategory(ctrl),
+			}
+			tt.mock(f)
+
+			cs := &categoryService{
+				categoryRepository: f.categoryRepository,
+			}
+
+			got, err := cs.Update(tt.args.ctx, tt.args.dtoCategory)
+			assert.Equal(t, got, tt.want)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+			}
+		})
+	}
+}

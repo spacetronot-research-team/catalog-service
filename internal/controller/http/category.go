@@ -74,3 +74,17 @@ func (cc *CategoryController) Delete(ctx *gin.Context) {
 
 	httpresponse.Write(ctx, http.StatusOK, categoryID, nil)
 }
+
+// GetList return categories
+func (cc *CategoryController) GetList(ctx *gin.Context) {
+	categories, err := cc.categoryService.GetList(ctx)
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).Info("success get categories")
+
+	httpresponse.Write(ctx, http.StatusOK, categories, nil)
+}

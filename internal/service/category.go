@@ -13,7 +13,8 @@ import (
 type Category interface {
 	// Create inserts category to db, return categoryID and error
 	Create(ctx context.Context, dtoCategory dto.CreateCategoryRequest) (categoryID int64, err error)
-	GetList()
+	// GetList return categories
+	GetList(ctx context.Context) (categories []model.Category, err error)
 	GetDetails()
 	Update()
 	// Delete will delete category from db by categoryID
@@ -64,9 +65,13 @@ func (*categoryService) GetDetails() {
 	panic("unimplemented")
 }
 
-// GetList implements Category.
-func (*categoryService) GetList() {
-	panic("unimplemented")
+// GetList return categories
+func (cs *categoryService) GetList(ctx context.Context) ([]model.Category, error) {
+	categories, err := cs.categoryRepository.GetList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fail get category list: %v", err)
+	}
+	return categories, nil
 }
 
 // Update implements Category.

@@ -153,3 +153,68 @@ func Test_categoryService_Delete(t *testing.T) {
 		})
 	}
 }
+
+func Test_categoryService_GetList(t *testing.T) {
+	type fields struct {
+		categoryRepository *repository.MockCategory
+	}
+	type args struct {
+		ctx context.Context
+	}
+	tests := []struct {
+		name    string
+		mock    func(f fields)
+		args    args
+		want    []model.Category
+		wantErr bool
+	}{
+		{
+			name: "fail get category list from repo",
+			mock: func(f fields) {
+				f.categoryRepository.EXPECT().
+					GetList(nil).
+					Return(nil, assert.AnError)
+			},
+			args: args{
+				ctx: nil,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success get category list",
+			mock: func(f fields) {
+				f.categoryRepository.EXPECT().
+					GetList(nil).
+					Return([]model.Category{{}, {}, {}}, nil)
+			},
+			args: args{
+				ctx: nil,
+			},
+			want:    []model.Category{{}, {}, {}},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			f := fields{
+				categoryRepository: repository.NewMockCategory(ctrl),
+			}
+			tt.mock(f)
+
+			cs := &categoryService{
+				categoryRepository: f.categoryRepository,
+			}
+			got, err := cs.GetList(tt.args.ctx)
+			assert.Equal(t, got, tt.want)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+			}
+		})
+	}
+}

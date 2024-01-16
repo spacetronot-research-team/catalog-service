@@ -82,15 +82,18 @@ func (mr *MockCategoryMockRecorder) GetDetails() *gomock.Call {
 }
 
 // GetList mocks base method.
-func (m *MockCategory) GetList() {
+func (m *MockCategory) GetList(ctx context.Context) ([]model.Category, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetList")
+	ret := m.ctrl.Call(m, "GetList", ctx)
+	ret0, _ := ret[0].([]model.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetList indicates an expected call of GetList.
-func (mr *MockCategoryMockRecorder) GetList() *gomock.Call {
+func (mr *MockCategoryMockRecorder) GetList(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockCategory)(nil).GetList))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockCategory)(nil).GetList), ctx)
 }
 
 // Update mocks base method.

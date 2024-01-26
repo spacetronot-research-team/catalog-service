@@ -1,13 +1,16 @@
 package service
 
 import (
+	"context"
+
+	"github.com/spacetronot-research-team/catalog-service/internal/model"
 	"github.com/spacetronot-research-team/catalog-service/internal/repository"
 )
 
 type Product interface {
 	Create()
 	GetList()
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (product model.Product, err error)
 	Update()
 	Delete()
 }
@@ -33,8 +36,8 @@ func (*productService) Delete() {
 }
 
 // GetDetails implements Product.
-func (*productService) GetDetails() {
-	panic("unimplemented")
+func (ps *productService) GetDetail(ctx context.Context, id int) (product model.Product, err error) {
+	return ps.productRepository.GetDetail(ctx, id)
 }
 
 // GetList implements Product.

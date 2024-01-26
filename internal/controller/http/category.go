@@ -1,15 +1,15 @@
 package http
 
-import (
-	"github.com/spacetronot-research-team/catalog-service/internal/service"
-)
+// import (
+// 	"github.com/spacetronot-research-team/catalog-service/internal/service"
+// )
 
-type CategoryController struct {
-	productService service.Product
-}
+// type CategoryController struct {
+// 	categoryService service.Category
+// }
 
-func NewCategoryController(productService service.Product) *CategoryController {
-	return &CategoryController{
-		productService: productService,
-	}
-}
+// func NewCategoryController(productService service.Product) *CategoryController {
+// 	return &CategoryController{
+// 		productService: productService,
+// 	}
+// }

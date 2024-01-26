@@ -1,18 +1,28 @@
 package repository
 
+import (
+	"context"
+
+	"github.com/spacetronot-research-team/catalog-service/internal/model"
+	"gorm.io/gorm"
+)
+
 type Product interface {
 	Create()
 	GetList()
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (product model.Product, err error)
 	Update()
 	Delete()
 }
 
 type productRepository struct {
+	db *gorm.DB
 }
 
-func NewProductRepository() Product {
-	return &productRepository{}
+func NewProductRepository(db *gorm.DB) Product {
+	return &productRepository{
+		db: db,
+	}
 }
 
 func (*productRepository) Create() {
@@ -23,8 +33,14 @@ func (*productRepository) Delete() {
 	panic("unimplemented")
 }
 
-func (*productRepository) GetDetails() {
-	panic("unimplemented")
+func (pr *productRepository) GetDetail(ctx context.Context, id int) (product model.Product, err error) {
+	query := pr.db.
+		Joins("Category").
+		First(&product, id)
+	if query.Error != nil {
+		return model.Product{}, query.Error
+	}
+	return
 }
 
 func (*productRepository) GetList() {

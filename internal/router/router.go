@@ -8,7 +8,9 @@ import (
 
 func Add(ginEngine *gin.Engine, db *gorm.DB) {
 	productController := productController(db)
+	categoryController := categoryController(db)
 	ginEngine.Use(middleware.Trace())
 
 	ginEngine.GET("/api/products/:id", productController.GetDetail)
+	ginEngine.GET("/api/categories/:id", categoryController.GetDetail)
 }

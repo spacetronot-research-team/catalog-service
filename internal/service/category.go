@@ -1,11 +1,16 @@
 package service
 
-import "github.com/spacetronot-research-team/catalog-service/internal/repository"
+import (
+	"context"
+
+	"github.com/spacetronot-research-team/catalog-service/internal/model"
+	"github.com/spacetronot-research-team/catalog-service/internal/repository"
+)
 
 type Category interface {
 	Create()
 	GetList()
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (category model.Category, err error)
 	Update()
 	Delete()
 }
@@ -31,8 +36,8 @@ func (*categoryService) Delete() {
 }
 
 // GetDetails implements Category.
-func (*categoryService) GetDetails() {
-	panic("unimplemented")
+func (cs *categoryService) GetDetail(ctx context.Context, id int) (category model.Category, err error) {
+	return cs.categoryRepository.GetDetail(ctx, id)
 }
 
 // GetList implements Category.

@@ -37,9 +37,7 @@ func (*productService) Delete() {
 
 // GetDetails implements Product.
 func (ps *productService) GetDetail(ctx context.Context, id int) (product model.Product, err error) {
-	product, err = ps.productRepository.GetDetail(ctx, id)
-
-	return
+	return ps.productRepository.GetDetail(ctx, id)
 }
 
 // GetList implements Product.

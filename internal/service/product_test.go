@@ -363,3 +363,99 @@ func Test_productService_Update(t *testing.T) {
 		})
 	}
 }
+
+func Test_productService_GetList(t *testing.T) {
+	type fields struct {
+		productRepository *repository.MockProduct
+	}
+	type args struct {
+		ctx   context.Context
+		page  int
+		limit int
+	}
+	tests := []struct {
+		name    string
+		mock    func(f fields)
+		args    args
+		want    []model.Product
+		wantErr bool
+	}{
+		{
+			name: "request invalid page less than 0",
+			mock: func(f fields) {
+			},
+			args: args{
+				ctx:   nil,
+				page:  0,
+				limit: 1,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "request invalid limit less than 0",
+			mock: func(f fields) {
+			},
+			args: args{
+				ctx:   nil,
+				page:  1,
+				limit: 0,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "fail get products from repo",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().
+					GetList(nil, gomock.Any()).
+					Return(nil, assert.AnError)
+			},
+			args: args{
+				ctx:   nil,
+				page:  10,
+				limit: 1,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success get products",
+			mock: func(f fields) {
+				f.productRepository.EXPECT().
+					GetList(nil, gomock.Any()).
+					Return([]model.Product{{}, {}}, nil)
+			},
+			args: args{
+				ctx:   nil,
+				page:  10,
+				limit: 1,
+			},
+			want:    []model.Product{{}, {}},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			f := fields{
+				productRepository: repository.NewMockProduct(ctrl),
+			}
+			tt.mock(f)
+
+			ps := &productService{
+				productRepository: f.productRepository,
+			}
+
+			got, err := ps.GetList(tt.args.ctx, tt.args.page, tt.args.limit)
+			assert.Equal(t, got, tt.want)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+			}
+		})
+	}
+}

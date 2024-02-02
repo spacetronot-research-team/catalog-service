@@ -109,3 +109,33 @@ func (pc *ProductController) Update(ctx *gin.Context) {
 
 	httpresponse.Write(ctx, http.StatusOK, productID, nil)
 }
+
+func (pc *ProductController) GetList(ctx *gin.Context) {
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	products, err := pc.productService.GetList(ctx, page, limit)
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).WithFields(logrus.Fields{
+		"page":  page,
+		"limit": limit,
+	}).Info("success get products")
+
+	httpresponse.Write(ctx, http.StatusOK, products, nil)
+}

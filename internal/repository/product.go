@@ -14,7 +14,8 @@ type Product interface {
 	Create(ctx context.Context, product model.Product) (productID int64, err error)
 	GetList()
 	GetDetails()
-	Update()
+	// Update will update product by id for every field that is not default value
+	Update(ctx context.Context, product model.Product) (productID int64, err error)
 	// Delete will delete product from db by productID
 	Delete(ctx context.Context, productID int64) (err error)
 }
@@ -58,6 +59,14 @@ func (*productRepository) GetList() {
 	panic("unimplemented")
 }
 
-func (*productRepository) Update() {
-	panic("unimplemented")
+// Update will update product by id for every field that is not default value
+func (pr *productRepository) Update(ctx context.Context, product model.Product) (productID int64, err error) {
+	query := pr.db.Updates(&product)
+	if query.Error != nil {
+		return 0, query.Error
+	}
+	if query.RowsAffected == 0 {
+		return 0, gorm.ErrRecordNotFound
+	}
+	return product.ID, nil
 }

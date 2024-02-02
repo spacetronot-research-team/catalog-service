@@ -74,3 +74,38 @@ func (pc *ProductController) Delete(ctx *gin.Context) {
 
 	httpresponse.Write(ctx, http.StatusOK, productID, nil)
 }
+
+// Update will update product by id for every field that is not default value
+func (pc *ProductController) Update(ctx *gin.Context) {
+	dtoProduct := dto.UpdateProductRequest{}
+	if err := ctx.ShouldBindJSON(&dtoProduct); err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	paramID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		logrus.WithContext(ctx).WithFields(logrus.Fields{
+			"id": ctx.Param("id"),
+		}).Error(fmt.Errorf("fail convert param id string to int: %v", err))
+
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	dtoProduct.ID = int64(paramID)
+
+	productID, err := pc.productService.Update(ctx, dtoProduct)
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).WithFields(logrus.Fields{
+		"product_id": productID,
+	}).Info("success update product")
+
+	httpresponse.Write(ctx, http.StatusOK, productID, nil)
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/spacetronot-research-team/catalog-service/internal/dto"
@@ -15,7 +16,8 @@ type Category interface {
 	GetList()
 	GetDetails()
 	Update()
-	Delete()
+	// Delete will delete category from db by categoryID
+	Delete(ctx context.Context, categoryID int64) (err error)
 }
 
 type categoryService struct {
@@ -37,9 +39,24 @@ func (cs *categoryService) Create(ctx context.Context, dtoCategory dto.CreateCat
 	return categoryID, nil
 }
 
-// Delete implements Category.
-func (*categoryService) Delete() {
-	panic("unimplemented")
+// Delete will delete category from db by categoryID
+func (cs *categoryService) Delete(ctx context.Context, categoryID int64) error {
+	if err := cs.validateDeleteCategoryID(categoryID); err != nil {
+		return fmt.Errorf("request invalid: %v", err)
+	}
+
+	if err := cs.categoryRepository.Delete(ctx, categoryID); err != nil {
+		return fmt.Errorf("fail delete category by id: %v", err)
+	}
+
+	return nil
+}
+
+func (*categoryService) validateDeleteCategoryID(categoryID int64) error {
+	if categoryID <= 0 {
+		return errors.New("category_id is not valid")
+	}
+	return nil
 }
 
 // GetDetails implements Category.

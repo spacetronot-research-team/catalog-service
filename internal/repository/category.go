@@ -15,7 +15,8 @@ type Category interface {
 	GetList()
 	GetDetails()
 	Update()
-	Delete()
+	// Delete will delete category from db by categoryID
+	Delete(ctx context.Context, categoryID int64) (err error)
 }
 
 type categoryRepository struct {
@@ -37,8 +38,16 @@ func (cr *categoryRepository) Create(ctx context.Context, category model.Categor
 	return category.ID, nil
 }
 
-func (*categoryRepository) Delete() {
-	panic("unimplemented")
+// Delete will delete category from db by categoryID
+func (cr *categoryRepository) Delete(ctx context.Context, categoryID int64) error {
+	query := cr.db.Where("id = ?", categoryID).Delete(&model.Category{})
+	if query.Error != nil {
+		return query.Error
+	}
+	if query.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (*categoryRepository) GetDetails() {

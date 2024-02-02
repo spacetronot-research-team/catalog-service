@@ -13,3 +13,10 @@ func getProductController(db *gorm.DB) *http.ProductController {
 	productController := http.NewProductController(productService)
 	return productController
 }
+
+func getCategoryController(db *gorm.DB) *http.CategoryController {
+	categoryRepository := repository.NewCategoryRepository(db)
+	categoryService := service.NewCategoryService(categoryRepository)
+	categoryController := http.NewCategoryController(categoryService)
+	return categoryController
+}

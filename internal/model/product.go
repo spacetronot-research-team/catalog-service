@@ -1,9 +1,9 @@
 package model
 
 type Product struct {
-	ID       int64
-	Category Category
-	Name     string
-	Stock    int64
-	Price    Price
+	ID         int64   `gorm:"column:id;primaryKey"`
+	Name       string  `gorm:"column:name"`
+	CategoryID int64   `gorm:"column:category_id"`
+	Stock      int64   `gorm:"column:stock"`
+	Price      float64 `gorm:"column:price"`
 }

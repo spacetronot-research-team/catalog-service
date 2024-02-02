@@ -12,4 +12,5 @@ func Add(ginEngine *gin.Engine, db *gorm.DB) {
 	ginEngine.Use(middleware.Trace())
 
 	ginEngine.POST("/api/products", productController.Create)
+	ginEngine.DELETE("/api/products/:id", productController.Delete)
 }

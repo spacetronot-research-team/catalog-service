@@ -88,3 +88,38 @@ func (cc *CategoryController) GetList(ctx *gin.Context) {
 
 	httpresponse.Write(ctx, http.StatusOK, categories, nil)
 }
+
+// Update will update category by id for every field that is not default value
+func (cc *CategoryController) Update(ctx *gin.Context) {
+	dtoCategory := dto.UpdateCategoryRequest{}
+	if err := ctx.ShouldBindJSON(&dtoCategory); err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	paramID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		logrus.WithContext(ctx).WithFields(logrus.Fields{
+			"id": ctx.Param("id"),
+		}).Error(fmt.Errorf("fail convert param id string to int: %v", err))
+
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	dtoCategory.ID = int64(paramID)
+
+	categoryID, err := cc.categoryService.Update(ctx, dtoCategory)
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).WithFields(logrus.Fields{
+		"category_id": categoryID,
+	}).Info("success update category")
+
+	httpresponse.Write(ctx, http.StatusOK, categoryID, nil)
+}

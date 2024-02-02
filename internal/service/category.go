@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/spacetronot-research-team/catalog-service/internal/dto"
 	"github.com/spacetronot-research-team/catalog-service/internal/model"
@@ -16,7 +17,8 @@ type Category interface {
 	// GetList return categories
 	GetList(ctx context.Context) (categories []model.Category, err error)
 	GetDetails()
-	Update()
+	// Update will update category by id for every field that is not default value
+	Update(ctx context.Context, dtoCategory dto.UpdateCategoryRequest) (categoryID int64, err error)
 	// Delete will delete category from db by categoryID
 	Delete(ctx context.Context, categoryID int64) (err error)
 }
@@ -74,7 +76,34 @@ func (cs *categoryService) GetList(ctx context.Context) ([]model.Category, error
 	return categories, nil
 }
 
-// Update implements Category.
-func (*categoryService) Update() {
-	panic("unimplemented")
+// Update will update category by id for every field that is not default value
+func (cs *categoryService) Update(ctx context.Context, dtoCategory dto.UpdateCategoryRequest) (int64, error) {
+	if err := cs.validateDTOUpdateCategoryRequest(dtoCategory); err != nil {
+		return 0, fmt.Errorf("update category request invalid: %v", err)
+	}
+
+	category := cs.dtoUpdateCategoryRequestToModelCategory(dtoCategory)
+
+	categoryID, err := cs.categoryRepository.Update(ctx, category)
+	if err != nil {
+		return 0, fmt.Errorf("fail update category: %v", err)
+	}
+
+	return categoryID, nil
+}
+
+func (cs *categoryService) validateDTOUpdateCategoryRequest(dtoCategory dto.UpdateCategoryRequest) error {
+	dtoCategoryDeultValueBody := dto.UpdateCategoryRequest{ID: dtoCategory.ID} // ID got from url param, not json body
+	isAllBodyDefaultValue := reflect.DeepEqual(&dtoCategory, &dtoCategoryDeultValueBody)
+	if isAllBodyDefaultValue {
+		return errors.New("nothing to be update")
+	}
+	return nil
+}
+
+func (cs *categoryService) dtoUpdateCategoryRequestToModelCategory(dtoCategory dto.UpdateCategoryRequest) model.Category {
+	return model.Category{
+		ID:   dtoCategory.ID,
+		Name: dtoCategory.Name,
+	}
 }

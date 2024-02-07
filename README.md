@@ -12,6 +12,7 @@ docker compose up
 
 ```shell
 sql-migrate up -config=dbconfig.yml -env="development"
+go run database/migrate/up.go
 ```
 
 3. connect from db client with credential

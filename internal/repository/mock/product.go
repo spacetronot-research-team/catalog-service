@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/spacetronot-research-team/catalog-service/internal/model"
+	pagination "github.com/spacetronot-research-team/catalog-service/pkg/pagination"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,27 +42,32 @@ func (m *MockProduct) EXPECT() *MockProductMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockProduct) Create() {
+func (m *MockProduct) Create(ctx context.Context, product model.Product) (int64, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Create")
+	ret := m.ctrl.Call(m, "Create", ctx, product)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockProductMockRecorder) Create() *gomock.Call {
+func (mr *MockProductMockRecorder) Create(ctx, product any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockProduct)(nil).Create))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockProduct)(nil).Create), ctx, product)
 }
 
 // Delete mocks base method.
-func (m *MockProduct) Delete() {
+func (m *MockProduct) Delete(ctx context.Context, productID int64) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Delete")
+	ret := m.ctrl.Call(m, "Delete", ctx, productID)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockProductMockRecorder) Delete() *gomock.Call {
+func (mr *MockProductMockRecorder) Delete(ctx, productID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProduct)(nil).Delete))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProduct)(nil).Delete), ctx, productID)
 }
 
 // GetDetail mocks base method.
@@ -80,25 +86,31 @@ func (mr *MockProductMockRecorder) GetDetail(ctx, id any) *gomock.Call {
 }
 
 // GetList mocks base method.
-func (m *MockProduct) GetList() {
+func (m *MockProduct) GetList(ctx context.Context, pagination pagination.Pagination) ([]model.Product, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetList")
+	ret := m.ctrl.Call(m, "GetList", ctx, pagination)
+	ret0, _ := ret[0].([]model.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetList indicates an expected call of GetList.
-func (mr *MockProductMockRecorder) GetList() *gomock.Call {
+func (mr *MockProductMockRecorder) GetList(ctx, pagination any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockProduct)(nil).GetList))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockProduct)(nil).GetList), ctx, pagination)
 }
 
 // Update mocks base method.
-func (m *MockProduct) Update() {
+func (m *MockProduct) Update(ctx context.Context, product model.Product) (int64, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Update")
+	ret := m.ctrl.Call(m, "Update", ctx, product)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockProductMockRecorder) Update() *gomock.Call {
+func (mr *MockProductMockRecorder) Update(ctx, product any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockProduct)(nil).Update))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockProduct)(nil).Update), ctx, product)
 }

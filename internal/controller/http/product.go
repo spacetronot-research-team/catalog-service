@@ -46,6 +46,23 @@ func (pc *ProductController) Create(ctx *gin.Context) {
 	httpresponse.Write(ctx, http.StatusOK, productID, nil)
 }
 
+// Get detail product to db
+func (pc *ProductController) GetDetail(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	product, err := pc.productService.GetDetail(ctx, id)
+	if err != nil {
+		logrus.WithContext(ctx).Error(err)
+		httpresponse.Write(ctx, http.StatusBadRequest, nil, err)
+		return
+	}
+
+	logrus.WithContext(ctx).WithFields(logrus.Fields{
+		"product": product,
+	}).Info("success get detail product to db")
+
+	httpresponse.Write(ctx, http.StatusOK, product, nil)
+}
+
 // Delete will delete product from db by productID
 func (pc *ProductController) Delete(ctx *gin.Context) {
 	paramID, err := strconv.Atoi(ctx.Param("id"))

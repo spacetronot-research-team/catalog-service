@@ -70,16 +70,19 @@ func (mr *MockProductMockRecorder) Delete(ctx, productID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProduct)(nil).Delete), ctx, productID)
 }
 
-// GetDetails mocks base method.
-func (m *MockProduct) GetDetails() {
+// GetDetail mocks base method.
+func (m *MockProduct) GetDetail(ctx context.Context, id int) (model.Product, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetDetails")
+	ret := m.ctrl.Call(m, "GetDetail", ctx, id)
+	ret0, _ := ret[0].(model.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// GetDetails indicates an expected call of GetDetails.
-func (mr *MockProductMockRecorder) GetDetails() *gomock.Call {
+// GetDetail indicates an expected call of GetDetail.
+func (mr *MockProductMockRecorder) GetDetail(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDetails", reflect.TypeOf((*MockProduct)(nil).GetDetails))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDetail", reflect.TypeOf((*MockProduct)(nil).GetDetail), ctx, id)
 }
 
 // GetList mocks base method.

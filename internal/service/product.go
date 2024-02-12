@@ -17,7 +17,7 @@ type Product interface {
 	Create(ctx context.Context, dtoProduct dto.CreateProductRequest) (productID int64, err error)
 	// GetList return products filtered using pagination
 	GetList(ctx context.Context, page int, limit int) (products []model.Product, err error)
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (product model.Product, err error)
 	// Update will update product by id for every field that is not default value
 	Update(ctx context.Context, dtoProduct dto.UpdateProductRequest) (productID int64, err error)
 	// Delete will delete product from db by productID
@@ -95,8 +95,8 @@ func (ps *productService) validateDeleteProductID(productID int64) error {
 }
 
 // GetDetails implements Product.
-func (*productService) GetDetails() {
-	panic("unimplemented")
+func (ps *productService) GetDetail(ctx context.Context, id int) (product model.Product, err error) {
+	return ps.productRepository.GetDetail(ctx, id)
 }
 
 // GetList return products filtered using pagination

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"errors"
 	"fmt"
 	"reflect"
@@ -16,7 +17,7 @@ type Category interface {
 	Create(ctx context.Context, dtoCategory dto.CreateCategoryRequest) (categoryID int64, err error)
 	// GetList return categories
 	GetList(ctx context.Context) (categories []model.Category, err error)
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (category model.Category, err error)
 	// Update will update category by id for every field that is not default value
 	Update(ctx context.Context, dtoCategory dto.UpdateCategoryRequest) (categoryID int64, err error)
 	// Delete will delete category from db by categoryID
@@ -63,8 +64,8 @@ func (*categoryService) validateDeleteCategoryID(categoryID int64) error {
 }
 
 // GetDetails implements Category.
-func (*categoryService) GetDetails() {
-	panic("unimplemented")
+func (cs *categoryService) GetDetail(ctx context.Context, id int) (category model.Category, err error) {
+	return cs.categoryRepository.GetDetail(ctx, id)
 }
 
 // GetList return categories

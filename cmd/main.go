@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -12,7 +15,7 @@ import (
 func main() {
 	logrus.AddHook(&logrushook.Trace{})
 
-	if err := godotenv.Load(".env"); err != nil {
+	if err := godotenv.Load("../.env"); err != nil {
 		logrus.Fatal(err)
 	}
 
@@ -23,9 +26,18 @@ func main() {
 
 	ginEngine := gin.Default()
 
+	ginEngine.GET("/ping", ping)
 	router.Add(ginEngine, db)
 
 	if err := ginEngine.Run(); err != nil {
 		logrus.Fatal(err)
 	}
+}
+
+func ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":       http.StatusOK,
+		"service_name": os.Getenv("SERVICE_NAME"),
+		"mode":         os.Getenv("MODE"),
+	})
 }

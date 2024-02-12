@@ -8,13 +8,12 @@ import (
 )
 
 //go:generate mockgen -source=category.go -destination=mock/category.go -package=repository
-
 type Category interface {
 	// Create inserts category to db, return categoryID and error
 	Create(ctx context.Context, category model.Category) (categoryID int64, err error)
 	// GetList return categories
 	GetList(ctx context.Context) (categories []model.Category, err error)
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (category model.Category, err error)
 	// Update will update category by id for every field that is not default value
 	Update(ctx context.Context, category model.Category) (categoryID int64, err error)
 	// Delete will delete category from db by categoryID
@@ -52,8 +51,13 @@ func (cr *categoryRepository) Delete(ctx context.Context, categoryID int64) erro
 	return nil
 }
 
-func (*categoryRepository) GetDetails() {
-	panic("unimplemented")
+func (cr *categoryRepository) GetDetail(ctx context.Context, id int) (category model.Category, err error) {
+	query := cr.db.
+		First(&category, id)
+	if query.Error != nil {
+		return model.Category{}, query.Error
+	}
+	return
 }
 
 // GetList return categories

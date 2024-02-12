@@ -9,13 +9,12 @@ import (
 )
 
 //go:generate mockgen -source=product.go -destination=mock/product.go -package=repository
-
 type Product interface {
 	// Create inserts product to db, return productID and error
 	Create(ctx context.Context, product model.Product) (productID int64, err error)
 	// GetList return products filtered using pagination
 	GetList(ctx context.Context, pagination pagination.Pagination) (products []model.Product, err error)
-	GetDetails()
+	GetDetail(ctx context.Context, id int) (product model.Product, err error)
 	// Update will update product by id for every field that is not default value
 	Update(ctx context.Context, product model.Product) (productID int64, err error)
 	// Delete will delete product from db by productID
@@ -53,8 +52,14 @@ func (pr *productRepository) Delete(ctx context.Context, productID int64) (err e
 	return nil
 }
 
-func (*productRepository) GetDetails() {
-	panic("unimplemented")
+func (pr *productRepository) GetDetail(ctx context.Context, id int) (product model.Product, err error) {
+	query := pr.db.
+		Joins("Category").
+		First(&product, id)
+	if query.Error != nil {
+		return model.Product{}, query.Error
+	}
+	return
 }
 
 // GetList return products filtered using pagination
